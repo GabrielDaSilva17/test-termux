@@ -5,7 +5,7 @@
 # ==========================================
 
 # VERSÃO DO SCRIPT
-VERSION="0.4.2"
+VERSION="0.4.2.0.1"
 
 # Cores
 VERDE="\e[92m"; AMARELO="\e[33m"; CIANO="\e[36m"; VERMELHO="\e[31m"; RESET="\e[0m"; NEGRITO="\e[1m"; ROXO="\e[35m"
