@@ -1,4 +1,3 @@
-
 # 🚀 Gabriel-Termux ULTRA EDITION 2026
 
 ![Termux](https://img.shields.io/badge/Platform-Termux-orange?style=for-the-badge&logo=android)
