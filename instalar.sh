@@ -93,6 +93,10 @@ pip install yt-dlp >/dev/null 2>&1 && echo -e "${VERDE}OK${RESET}" || echo -e "$
 echo -ne "${CIANO}Instalando Speedtest... ${RESET}"
 pip install speedtest-cli >/dev/null 2>&1 && echo -e "${VERDE}OK${RESET}" || echo -e "${VERMELHO}Erro${RESET}"
 
+echo -ne "${CIANO}AcodeX - Terminal... ${RESET}"
+curl -sL https://raw.githubusercontent.com/bajrangCoder/acode-plugin-acodex/main/installServer.sh | bash
+
+
 sshd >/dev/null 2>&1
 ln -sf $PREFIX/bin/clang $PREFIX/bin/gcc >/dev/null 2>&1
 
@@ -130,6 +134,7 @@ draw_banner
 check() { if command -v $1 &> /dev/null; then echo -e "\033[1;32mON\033[0m"; else echo -e "\033[1;31mOFF\033[0m"; fi }
 echo -e "    \033[1;33mPYTHON:\033[0m $(check python)   \033[1;33mNODE:\033[0m $(check node)   \033[1;33mSSH:\033[0m $(check sshd)"
 echo -e "    \033[1;33mCLANG :\033[0m $(check clang)   \033[1;33mGIT :\033[0m $(check git)    \033[1;33mX11:\033[0m $(check termux-x11)"
+echo -e ".   \033[1;33mCLANG :\033[0m $(check axs)
 echo " "
 
 # 3. VERIFICADOR DE ATUALIZAÇÃO (SILENCIOSO)
@@ -162,6 +167,8 @@ source ~/.bashrc
 clear
 echo -e "${VERDE}${NEGRITO}INSTALAÇÃO COMPLETA! (v$VERSION)${RESET}"
 echo -e "${VERDE}[✓]${RESET} Mensagens de 'Done' Removidas"
+echo -e "${VERDE}[✓]${RESET}AcodeX - Terminal... 'DONE'"
+echo -e "${AMARELO}Install axs cli binary.${RESET}"
 echo " "
 echo -e "${AMARELO}${NEGRITO}============================================${RESET}"
 echo -e "\n${ROXO} GABRIEL-TERMUX ULTRA EDITION 2026 (CLEAN)${RESET}\n"
