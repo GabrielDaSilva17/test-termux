@@ -59,6 +59,7 @@ O script facilita sua vida criando comandos curtos:
 | `ssh-on` | Liga o servidor SSH e mostra seu endereço IP. |
 | `fechar` | Encerra processos travados do servidor X11. |
 | `cls` | Limpa a tela (alternativa ao clear). |
+| `axs` | Install axs cli binary.|
 
 ## 🔑 Pós-Instalação
 
