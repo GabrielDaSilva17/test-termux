@@ -118,17 +118,20 @@ echo -e "    \033[1;33mPYTHON:\033[0m $(check python)   \033[1;33mNODE:\033[0m $
 echo -e "    \033[1;33mCLANG :\033[0m $(check clang)   \033[1;33mGIT :\033[0m $(check git)    \033[1;33mX11:\033[0m $(check termux-x11)"
 echo " "
 
-# 3. VERIFICADOR DE ATUALIZAÇÃO (Roda em background)
+# 3. VERIFICADOR DE ATUALIZAÇÃO (CORRIGIDO)
 (
+    # URL do arquivo Raw
     REMOTE_URL="https://raw.githubusercontent.com/GabrielDaSilva17/Termux-Auto-Install/main/instalar.sh"
     LOCAL_VER=$(cat ~/.gabriel_version 2>/dev/null || echo "0")
     
-    # Baixa apenas o cabeçalho para ver a versão
-    REMOTE_VER=$(curl -s $REMOTE_URL | grep "VERSION=" | head -n 1 | cut -d'"' -f2)
+    # CORREÇÃO: Pega apenas as primeiras 20 linhas e filtra estritamente por VERSION="..."
+    # Isso evita pegar HTML de erro ou o arquivo inteiro
+    REMOTE_VER=$(curl -sL $REMOTE_URL | head -n 20 | grep '^VERSION="' | cut -d'"' -f2)
     
-    if [ "$REMOTE_VER" != "$LOCAL_VER" ] && [ ! -z "$REMOTE_VER" ]; then
+    # Verifica se REMOTE_VER é válido (tem que ter um ponto, ex: 3.1) e se é diferente da local
+    if [[ "$REMOTE_VER" == *"."* ]] && [ "$REMOTE_VER" != "$LOCAL_VER" ]; then
          echo -e "\n\033[1;32m[!] NOVA ATUALIZAÇÃO DISPONÍVEL ($REMOTE_VER)!\033[0m"
-         echo -e "Digite \033[1;33matualizar-setup\033[0m para instalar.\n"
+         echo -e "Digite \033[1;33matualizar-setup\033[0m para baixar.\n"
     fi
 ) &
 
@@ -143,6 +146,6 @@ source ~/.bashrc
 # Tela Final
 clear
 echo -e "${VERDE}${NEGRITO}INSTALAÇÃO COMPLETA! (v$VERSION)${RESET}"
-echo -e "${VERDE}[✓]${RESET} Sistema de Auto-Update Ativado"
+echo -e "${VERDE}[✓]${RESET} Sistema de Auto-Update Corrigido"
 echo " "
 echo "Reinicie o Termux."
