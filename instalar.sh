@@ -5,7 +5,7 @@
 # ==========================================
 
 # VERSÃO DO SCRIPT
-VERSION="0.4.6"
+VERSION="0.4.6.1"
 
 # Cores
 VERDE="\e[92m"; AMARELO="\e[33m"; CIANO="\e[36m"; VERMELHO="\e[31m"; RESET="\e[0m"; NEGRITO="\e[1m"; ROXO="\e[35m"
@@ -71,7 +71,7 @@ packages=(
     "clang" "make" "cmake" "binutils" "curl" "wget" "perl" "ruby" 
     "php" "nodejs" "bash" "nano" "zip" "unzip" "openssl" "openssh" 
     "zsh" "ffmpeg" "htop" "screen" "jq" "rsync" "tree" "termux-api" 
-    "neofetch" "cmatrix" "cowsay" "fortune" "sl" "ranger" 
+    "neofetch" "cmatrix" "cowsay" "fortune" "sl" "ranger" "xorgproto"
     "proot" "proot-distro" "tsu" "man" "vim" "proxychains-ng" "tur-repo" "code-server"
 )
 
