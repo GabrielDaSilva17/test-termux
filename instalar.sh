@@ -1,78 +1,107 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
 # ==========================================
-# GABRIEL-TERMUX: REPAIR & INSTALL EDITION
+# GABRIEL-TERMUX: ULTIMATE FULL EDITION
 # ==========================================
 
-# Cores
-VERDE="\e[92m"; AMARELO="\e[33m"; CIANO="\e[36m"; VERMELHO="\e[31m"; RESET="\e[0m"; NEGRITO="\e[1m"
-CINZA="\e[90m"
+# 1. Definição de Cores
+VERDE="\e[92m"
+AMARELO="\e[33m"
+CIANO="\e[36m"
+VERMELHO="\e[31m"
+ROXO="\e[35m"
+RESET="\e[0m"
+NEGRITO="\e[1m"
 
+# Limpa a tela inicial
 clear
 echo -e "${AMARELO}${NEGRITO}============================================${RESET}"
-echo -e "\n${AMARELO} [${VERDE}Gabriel-Termux${RESET}${VERMELHO} FINAL FIX 2026${AMARELO}]${RESET}\n"
+echo -e "\n${ROXO} [ GABRIEL-TERMUX ULTRA INSTALLER COMPLETO ]${RESET}\n"
 echo -e "${AMARELO}${NEGRITO}============================================${RESET}"
 sleep 1
 
-# Função de instalação segura
+# --- FUNÇÃO DE INSTALAÇÃO SEGURA (Não deixa passar erro despercebido) ---
 install_package() {
     pkg_name=$1
-    echo -ne "${AMARELO}Verificando $pkg_name... ${RESET}"
+    echo -ne "${AMARELO}Checando $pkg_name... ${RESET}"
+    
+    # Verifica se já está instalado
     if dpkg -s "$pkg_name" &> /dev/null; then
-        echo -e "${VERDE}OK (Já instalado)${RESET}"
+        echo -e "${VERDE}OK (Já existe) ✅${RESET}"
     else
-        echo -e "${VERMELHO}Instalando...${RESET}"
+        # Tenta instalar
+        echo -ne "${VERMELHO}Instalando... ${RESET}"
         pkg install "$pkg_name" -y > /dev/null 2>&1
+        
+        # Confere se instalou mesmo
         if [ $? -eq 0 ]; then
-             echo -e "${VERDE}Instalado com sucesso!${RESET}"
+            echo -e "${VERDE}Sucesso!${RESET}"
         else
-             echo -e "${VERMELHO}Erro (Tentando continuar...)${RESET}"
+            echo -e "\n${VERMELHO}${NEGRITO}!!! FALHA AO INSTALAR $pkg_name !!!${RESET}"
+            echo -e "${VERMELHO}Tentando novamente em 5 segundos...${RESET}"
+            sleep 5
+            pkg install "$pkg_name" -y
         fi
     fi
 }
 
-echo -e "${CIANO} Atualizando repositórios (pode demorar)...${RESET}"
-pkg update -y > /dev/null 2>&1 && pkg upgrade -y > /dev/null 2>&1
-pkg install x11-repo termux-api -y > /dev/null 2>&1
+# 2. Atualização Inicial
+echo -e "${CIANO}Atualizando a base do sistema (Aguarde)...${RESET}"
+pkg update -y && pkg upgrade -y
+pkg install x11-repo termux-api -y
 
-# LISTA COMPLETA DE PACOTES
-# Nota: 'lolcat' e 'figlet' são essenciais para o banner
+# 3. LISTA COMPLETA E GIGANTE DE PACOTES
+# Nada foi removido aqui.
 packages=(
-    "git" "python" "python-pip" "clang" "make" "cmake" "binutils" 
-    "curl" "wget" "perl" "ruby" "php" "nodejs" "bash" "nano" 
-    "zip" "unzip" "openssl" "openssh" "zsh" "ffmpeg" "htop" 
-    "screen" "jq" "rsync" "tree" "termux-api" "termux-x11" "sdl2"
-    "neofetch" "cmatrix" "figlet" "cowsay" "fortune" "sl" "ranger"
-    "proot" "proot-distro" "tsu" "man" "vim" "proxychains-ng" "lolcat"
+    # Essenciais do Banner
+    "figlet" "lolcat" "ncurses-utils" "procps" 
+    
+    # Linguagens e Compiladores
+    "python" "python-pip" "clang" "make" "cmake" "binutils" 
+    "perl" "ruby" "php" "nodejs" "git" "rust"
+    
+    # Web e Rede
+    "curl" "wget" "openssl" "openssh" "rsync" "proxychains-ng" "net-tools"
+    
+    # Sistema e Arquivos
+    "bash" "zsh" "nano" "vim" "zip" "unzip" "tar" "tree" "jq" 
+    "htop" "proot" "proot-distro" "tsu" "man" "screen"
+    
+    # Interface Gráfica e Multimídia
+    "termux-x11" "sdl2" "ffmpeg" "imagemagick"
+    
+    # Diversão e Visual
+    "neofetch" "cmatrix" "cowsay" "fortune" "sl" "ranger"
 )
 
-# Loop de instalação
+# Loop de Instalação
 for pkg in "${packages[@]}"; do
     install_package "$pkg"
 done
 
-# Instalações Python
-echo -e "${CIANO}Configurando Python Utils...${RESET}"
+# 4. Configurações Pós-Instalação
+echo -e "${CIANO}Configurando Python Utils (yt-dlp)...${RESET}"
 pip install --upgrade pip > /dev/null 2>&1
 pip install yt-dlp speedtest-cli > /dev/null 2>&1
 
-# Configurações de Sistema
+echo -e "${CIANO}Configurando SSH e GCC...${RESET}"
 sshd > /dev/null 2>&1
 ln -sf $PREFIX/bin/clang $PREFIX/bin/gcc > /dev/null 2>&1
 
 # ==========================================
-# PARTE 1: VERIFICAÇÃO VISUAL (DURANTE A INSTALAÇÃO)
+# FASE VISUAL: CHECKLIST DAS VERSÕES
+# (Isso é o que estava faltando antes)
 # ==========================================
 clear
-echo -e "${AMARELO}${NEGRITO}🔎 CHECANDO VERSÕES INSTALADAS...${RESET}"
+echo -e "${AMARELO}${NEGRITO}🔎 CONFERINDO SISTEMA...${RESET}"
 echo " "
 sleep 1
-# Função para checar versão sem erro
+
 check_version() {
     if command -v $1 &> /dev/null; then
         echo -e "${CIANO}$2:${RESET} $($3)"
     else
-        echo -e "${CIANO}$2:${RESET} ${VERMELHO}Não encontrado!${RESET}"
+        echo -e "${CIANO}$2:${RESET} ${VERMELHO}Não detectado!${RESET}"
     fi
 }
 
@@ -80,87 +109,67 @@ check_version "python" "Python" "python --version"
 check_version "node"   "NodeJS" "node -v"
 check_version "clang"  "Clang " "clang --version | head -n 1"
 check_version "git"    "Git   " "git --version"
-check_version "php"    "PHP   " "php -v | head -n 1"
-
 echo " "
-echo -e "${AMARELO}Gerando Checklist Final...${RESET}"
+echo -e "${AMARELO}Gerando Relatório Final...${RESET}"
 sleep 3
 
 clear
 echo -e "${VERDE}${NEGRITO}=== RELATÓRIO DE INSTALAÇÃO ===${RESET}"
 echo " "
-# Simulação de checklist real baseada no comando 'command -v'
-[ -f $PREFIX/bin/termux-x11 ] && echo -e "${VERDE}[✓]${RESET} X11 (Interface Gráfica)" || echo -e "${VERMELHO}[X]${RESET} X11 Falhou"
-sleep 0.5
+[ -f $PREFIX/bin/termux-x11 ] && echo -e "${VERDE}[✓]${RESET} X11 Gráfico" || echo -e "${VERMELHO}[X]${RESET} X11 Falhou"
+sleep 0.2
 [ -f $PREFIX/bin/sshd ] && echo -e "${VERDE}[✓]${RESET} Servidor SSH" || echo -e "${VERMELHO}[X]${RESET} SSH Falhou"
-sleep 0.5
-[ -f $PREFIX/bin/clang ] && echo -e "${VERDE}[✓]${RESET} Compilador C/C++" || echo -e "${VERMELHO}[X]${RESET} Clang Falhou"
-sleep 0.5
-[ -f $PREFIX/bin/yt-dlp ] && echo -e "${VERDE}[✓]${RESET} Downloader (yt-dlp)" || echo -e "${VERMELHO}[X]${RESET} yt-dlp Falhou"
-sleep 0.5
-[ -f $PREFIX/bin/figlet ] && echo -e "${VERDE}[✓]${RESET} Sistema de Banners" || echo -e "${VERMELHO}[X]${RESET} Figlet Falhou"
+sleep 0.2
+[ -f $PREFIX/bin/yt-dlp ] && echo -e "${VERDE}[✓]${RESET} Youtube-DLP" || echo -e "${VERMELHO}[X]${RESET} yt-dlp Falhou"
+sleep 0.2
+[ -f $PREFIX/bin/figlet ] && echo -e "${VERDE}[✓]${RESET} Visual (Banner)" || echo -e "${VERMELHO}[X]${RESET} Figlet Falhou"
 echo " "
-echo -e "${AMARELO}Configurando inicialização permanente...${RESET}"
+echo -e "${AMARELO}Criando Banner Permanente...${RESET}"
 sleep 2
 
 # ==========================================
-# PARTE 2: CONFIGURAÇÃO DO .BASHRC (TODA VEZ QUE ABRIR)
+# CONFIGURAÇÃO FINAL DO .BASHRC
+# (O Quadrado Gigante + Android)
 # ==========================================
 
-# Limpa o arquivo antigo
+# Limpa configurações antigas
 echo "" > ~/.bashrc
 
-# Recria o arquivo com a lógica de verificação
+# Escreve a nova configuração
 cat << 'EOF' >> ~/.bashrc
 # --- GABRIEL TERMUX CONFIG ---
 
-# Aliases
+# Aliases Úteis
 alias atualizar='pkg update && pkg upgrade -y'
 alias fechar='pkill termux-x11'
 alias ssh-on='sshd && ifconfig | grep inet'
+alias cls='clear'
 alias limpar='rm -rf ~/.termux/shell_history'
 
-# Limpa a tela ao abrir
+# Limpa a tela ao iniciar
 clear
 
-# 1. O BANNER GABRIEL (Com proteção de erro)
-if command -v figlet &> /dev/null && command -v lolcat &> /dev/null; then
-    figlet -f slant "GABRIEL" | lolcat
-else
-    echo "GABRIEL TERMUX"
-fi
+# 1. O BANNER QUADRADO (Estilo Placa)
+echo -e "\033[1;35m╔═══════════════════════════════════════════════════════════╗\033[0m"
+figlet -f slant "   GABRIEL   " | lolcat
+echo -e "\033[1;35m╚═══════════════════════════════════════════════════════════╝\033[0m"
 
-# 2. MINI-DASHBOARD DE STATUS (O que está ON/OFF)
-echo -e "\033[1;33m====================================\033[0m"
-echo -e "\033[1;32m SYSTEM STATUS \033[0m"
-
-# Checagem rápida no boot
-check_stat() {
-    if command -v $1 &> /dev/null; then
-        echo -e " $2: \033[1;32m[ON]\033[0m"
-    else
-        echo -e " $2: \033[1;31m[OFF]\033[0m"
-    fi
+# 2. STATUS DO SISTEMA (Centralizado)
+check() {
+    if command -v $1 &> /dev/null; then echo -e "\033[1;32mON\033[0m"; else echo -e "\033[1;31mOFF\033[0m"; fi
 }
 
-# Exibe em colunas (lado a lado)
-echo -ne "$(check_stat python Python)   "
-echo -e  "$(check_stat clang Clang)"
-echo -ne "$(check_stat node NodeJS)   "
-echo -e  "$(check_stat sshd SSH)"
-echo -ne "$(check_stat git Git)      "
-echo -e  "$(check_stat termux-x11 X11)"
-
-echo -e "\033[1;33m====================================\033[0m"
+echo -e "    \033[1;33mPYTHON:\033[0m $(check python)   \033[1;33mNODE:\033[0m $(check node)   \033[1;33mSSH:\033[0m $(check sshd)"
+echo -e "    \033[1;33mCLANG :\033[0m $(check clang)   \033[1;33mGIT :\033[0m $(check git)    \033[1;33mX11:\033[0m $(check termux-x11)"
 echo " "
 
-# 3. INFO DO ANDROID (Neofetch minimalista)
-neofetch --ascii_distro android --disable packages --disable shell --disable term
+# 3. INFO DO ANDROID (Alinhada)
+neofetch --ascii_distro android --disable packages shell term resolution
 
 EOF
 
-# Ativa as configurações agora
+# Recarrega configurações
 source ~/.bashrc
 
-# Mensagem Final
-echo -e "${CIANO}Tudo pronto. Feche o Termux e abra novamente para testar!${RESET}"
+# Fim
+echo -e "${VERDE}Instalação Completa! Feche o Termux e abra de novo.${RESET}"
