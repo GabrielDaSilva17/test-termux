@@ -8,6 +8,7 @@ echo "--- 🚀 INICIANDO INSTALAÇÃO GABRIEL-TERMUX ---"
 # 1. Atualização e Repositórios Específicos
 echo "Configurando repositórios (X11 e API)..."
 pkg update -y
+pkg install -y
 pkg install x11-repo termux-api -y
 
 # 2. Base de Compilação e Python
