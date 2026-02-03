@@ -5,7 +5,7 @@
 # ==========================================
 
 # VERSÃO DO SCRIPT
-VERSION="0.4.1"
+VERSION="0.4.2"
 
 # Cores
 VERDE="\e[92m"; AMARELO="\e[33m"; CIANO="\e[36m"; VERMELHO="\e[31m"; RESET="\e[0m"; NEGRITO="\e[1m"; ROXO="\e[35m"
@@ -91,12 +91,12 @@ install_pkg_clean "sdl2"
 echo -e "\n${AMARELO}>>> Finalizando Ajustes${RESET}"
 
 echo -ne "${CIANO}Configurando PIP... ${RESET}"
-python -m ensurepip --default-pip >/dev/null 2>&1
-if pip install --upgrade pip >/dev/null 2>&1; then
+if python -m ensurepip --default-pip >/dev/null 2>&1; then
     echo -e "${VERDE}OK${RESET}"
 else
     echo -e "${VERMELHO}Erro${RESET}"
 fi
+
 
 echo -ne "${CIANO}Instalando yt-dlp... ${RESET}"
 if pip install yt-dlp >/dev/null 2>&1; then
@@ -112,10 +112,10 @@ else
     echo -e "${VERMELHO}Erro${RESET}"
 fi
 
-# Instalação do AcodeX Server
+# Instalação do AcodeX Server (VOLTOU PARA CURL)
 echo -ne "${CIANO}AcodeX - Terminal... ${RESET}"
-npm config set prefix $PREFIX > /dev/null 2>&1
-if npm install -g acodex-server > /dev/null 2>&1; then 
+curl -sL https://raw.githubusercontent.com/bajrangCoder/acode-plugin-acodex/main/installServer.sh | bash > /dev/null 2>&1
+if [ $? -eq 0 ]; then 
     echo -e "${VERDE}OK${RESET}"
 else 
     echo -e "${VERMELHO}Erro (Tente manual)${RESET}"
@@ -123,6 +123,8 @@ fi
 
 sshd >/dev/null 2>&1
 ln -sf $PREFIX/bin/clang $PREFIX/bin/gcc >/dev/null 2>&1
+
+sleep 5
 
 # 6. CONFIGURAÇÃO VISUAL (.bashrc)
 echo "" > ~/.bashrc
@@ -203,5 +205,3 @@ echo -e "${VERDE}${NEGRITO}INSTALAÇÃO COMPLETA! v$VERSION${RESET}"
 echo -e "${VERDE}[✓]${RESET} Script Blindado"
 echo " "
 echo "Reinicie o Termux."
-
-
