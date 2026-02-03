@@ -169,7 +169,7 @@ check() {
 
 echo -e "    \033[1;33mPYTHON:\033[0m $(check python)   \033[1;33mNODE:\033[0m $(check node)   \033[1;33mSSH:\033[0m $(check sshd)"
 echo -e "    \033[1;33mCLANG :\033[0m $(check clang)   \033[1;33mGIT :\033[0m $(check git)    \033[1;33mX11:\033[0m $(check termux-x11)"
-echo -e "    \033[1;33mACODEX:\033[0m $(check acodex-server)"
+echo -e "    \033[1;33mACODEX:\033[0m $(check axs)"
 echo " "
 
 # 3. VERIFICADOR DE ATUALIZAÇÃO (SIMPLIFICADO)
