@@ -6,7 +6,7 @@
 ![Maintenance](https://img.shields.io/badge/Maintained-Yes-success?style=for-the-badge)
 
 Este repositório oferece um script de automação de elite para o **Termux**. Ele transforma seu ambiente básico em uma estação de trabalho poderosa, integrando ferramentas de desenvolvimento, redes, servidores e utilitários gráficos com um visual exclusivo.
-## Versao: ~~4.5~~
+## Versao: `4.5`
 
 ## 🛠️ O que o Mega Installer faz?
 
