@@ -5,9 +5,10 @@ set -e
 
 echo "--- 🚀 INICIANDO INSTALAÇÃO GABRIEL-TERMUX ---"
 
-# 1. Atualização Geral
-echo "Atualizando repositórios..."
-pkg update -y && pkg upgrade -y
+# 1. Atualização e Repositórios Específicos
+echo "Configurando repositórios (X11 e API)..."
+pkg update -y
+pkg install x11-repo termux-api -y
 
 # 2. Base de Compilação e Python
 echo "Instalando Python e Compiladores..."
@@ -16,19 +17,15 @@ for tool in "${TOOLS[@]}"; do
     pkg install "$tool" -y
 done
 
-# Criar atalho do GCC apontando para o Clang (necessário no Termux)
+# Criar atalho do GCC apontando para o Clang
 ln -sf $PREFIX/bin/clang $PREFIX/bin/gcc
 
-# 3. Ativando Repositórios Específicos (X11 e API)
-echo "Configurando repositórios X11 e API..."
-pkg install x11-repo termux-api -y
-
-# 4. Utilitários Essenciais
-echo "Instalando ferramentas extras..."
+# 3. Utilitários Extras
+echo "Instalando ferramentas de suporte..."
 EXTRAS=("curl" "wget" "nano" "htop")
 for extra in "${EXTRAS[@]}"; do
     pkg install "$extra" -y
 done
 
 echo "--- ✅ TUDO PRONTO! ---"
-echo "Python, C (GCC/Clang), Git e Termux-API configurados."
+echo "Ambiente configurado com Python, C, Git e API."
