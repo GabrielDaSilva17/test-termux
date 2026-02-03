@@ -17,5 +17,5 @@ O script realiza a instalação automatizada dos seguintes pacotes:
 Para configurar o seu Termux instantaneamente, abra o terminal e cole o comando abaixo:
 
 ```bash
-curl -fsSL [https://raw.githubusercontent.com/GabrielDaSilva17/test-termux/main/instalar.sh](https://raw.githubusercontent.com/GabrielDaSilva17/test-termux/main/instalar.sh) | bash
+curl -fsSL https://raw.githubusercontent.com/GabrielDaSilva17/test-termux/main/instalar.sh | bash
 
