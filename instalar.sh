@@ -87,7 +87,9 @@ run_silent "Instalando Drivers SDL2" "pkg install sdl2 -y"
 
 # Configurações Finais
 echo -e "\n${AMARELO}>>> Finalizando Ajustes${RESET}"
-run_silent "Atualizando PIP e Python Libs" "pip install --upgrade pip && pip install yt-dlp speedtest-cli"
+run_silent "Atualizando PIP" "pip install --upgrade pip"
+run_silent "Instalando yt-dlp (Downloader)" "pip install yt-dlp"
+run_silent "Instalando Speedtest" "pip install speedtest-cli"
 run_silent "Configurando SSH" "sshd"
 run_silent "Linkando Compiladores" "ln -sf $PREFIX/bin/clang $PREFIX/bin/gcc"
 
