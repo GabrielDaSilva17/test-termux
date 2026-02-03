@@ -39,12 +39,22 @@ for pkg in "${packages[@]}"; do
     install_package "$pkg"
 done
 
-# --- Configurações Extras ---
-echo -e "${CIANO}Configurando Aliases e Atalhos...${RESET}"
+# --- Configurações Extras e Banner Permanente ---
+echo -e "${CIANO}Configurando Aliases e Banner Permanente...${RESET}"
+
+# Aliases úteis
 echo "alias atualizar='pkg update && pkg upgrade -y'" >> ~/.bashrc
 echo "alias fechar='pkill termux-x11'" >> ~/.bashrc
 echo "alias ssh-on='sshd && ifconfig | grep inet'" >> ~/.bashrc
 echo "alias limpar='rm -rf ~/.termux/shell_history'" >> ~/.bashrc
+
+# INJETANDO O BANNER 'GABRIEL' NO INÍCIO DO TERMUX
+# Verifica se já existe para não duplicar linhas
+if ! grep -q "figlet.*GABRIEL" ~/.bashrc; then
+    echo "clear" >> ~/.bashrc
+    echo 'figlet -f slant "GABRIEL" | lolcat 2>/dev/null || figlet "GABRIEL"' >> ~/.bashrc
+    echo "echo ' '" >> ~/.bashrc
+fi
 
 # --- Instalação do yt-dlp e ferramentas Python ---
 echo -e "${CIANO}Instalando ferramentas Python modernas...${RESET}"
@@ -79,7 +89,7 @@ echo -e "${VERDE}[✓]${RESET} Ambiente X11 Configurado"
 echo -e "${VERDE}[✓]${RESET} Compiladores (C/C++) Prontos"
 echo -e "${VERDE}[✓]${RESET} SSH Server (Porta 8022) Ativo"
 echo -e "${VERDE}[✓]${RESET} yt-dlp & FFmpeg Instalados"
-echo -e "${VERDE}[✓]${RESET} Aliases Injetados (.bashrc)"
+echo -e "${VERDE}[✓]${RESET} Banner 'GABRIEL' Configurado no Boot"
 echo " "
 echo -e "${AMARELO}Finalizando setup...${RESET}"
 sleep 3
@@ -95,6 +105,7 @@ echo -e "${AMARELO}IP Local:${VERDE} $MEU_IP ${RESET}"
 echo -e "${AMARELO}Atalhos:${CIANO} atualizar, fechar, ssh-on${RESET}"
 
 echo " "
+# Mostra o banner agora para confirmar
 figlet -f slant "GABRIEL" | lolcat 2>/dev/null || figlet "GABRIEL"
 echo " "
 neofetch
