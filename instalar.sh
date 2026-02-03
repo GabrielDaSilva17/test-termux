@@ -134,7 +134,7 @@ draw_banner
 check() { if command -v $1 &> /dev/null; then echo -e "\033[1;32mON\033[0m"; else echo -e "\033[1;31mOFF\033[0m"; fi }
 echo -e "    \033[1;33mPYTHON:\033[0m $(check python)   \033[1;33mNODE:\033[0m $(check node)   \033[1;33mSSH:\033[0m $(check sshd)"
 echo -e "    \033[1;33mCLANG :\033[0m $(check clang)   \033[1;33mGIT :\033[0m $(check git)    \033[1;33mX11:\033[0m $(check termux-x11)"
-echo -e ".   \033[1;33mCLANG :\033[0m $(check axs)
+echo -e ".   \033[1;33mCLANG :\033[0m $(check axs)"
 echo " "
 
 # 3. VERIFICADOR DE ATUALIZAÇÃO (SILENCIOSO)
