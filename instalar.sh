@@ -5,7 +5,7 @@
 # ==========================================
 
 # VERSÃO DO SCRIPT
-VERSION="0.4.0"
+VERSION="0.4.1"
 
 # Cores
 VERDE="\e[92m"; AMARELO="\e[33m"; CIANO="\e[36m"; VERMELHO="\e[31m"; RESET="\e[0m"; NEGRITO="\e[1m"; ROXO="\e[35m"
@@ -112,9 +112,8 @@ else
     echo -e "${VERMELHO}Erro${RESET}"
 fi
 
-# Instalação do AcodeX Server (CORRIGIDO)
+# Instalação do AcodeX Server
 echo -ne "${CIANO}AcodeX - Terminal... ${RESET}"
-# Garante que o NPM use o prefixo correto no Termux
 npm config set prefix $PREFIX > /dev/null 2>&1
 if npm install -g acodex-server > /dev/null 2>&1; then 
     echo -e "${VERDE}OK${RESET}"
@@ -128,7 +127,8 @@ ln -sf $PREFIX/bin/clang $PREFIX/bin/gcc >/dev/null 2>&1
 # 6. CONFIGURAÇÃO VISUAL (.bashrc)
 echo "" > ~/.bashrc
 
-cat << 'EOF' >> ~/.bashrc
+# USANDO UM DELIMITADOR SEGURO PARA NÃO DAR ERRO DE SINTAXE
+cat << 'GABRIEL_CONFIG_END' >> ~/.bashrc
 # --- GABRIEL CONFIG ---
 alias atualizar='pkg update && pkg upgrade -y'
 alias fechar='pkill termux-x11'
@@ -170,86 +170,37 @@ echo -e "    \033[1;33mCLANG :\033[0m $(check clang)   \033[1;33mGIT :\033[0m $(
 echo -e "    \033[1;33mACODEX:\033[0m $(check acodex-server)"
 echo " "
 
-# 3. ANDROID INFO
-neofetch --ascii_distro android --disable packages shell term resolution
-
-# 4. VERIFICADOR DE ATUALIZAÇÃO (RODA NO FINAL PARA NÃO BUGAR O VISUAL)
+# 3. VERIFICADOR DE ATUALIZAÇÃO (SIMPLIFICADO)
 check_update() {
     REMOTE_URL="https://raw.githubusercontent.com/GabrielDaSilva17/Termux-Auto-Install/main/instalar.sh"
     LOCAL_VER=$(cat ~/.gabriel_version 2>/dev/null || echo "0")
-    # Timeout de 2s para não travar se sem internet
+    # Timeout de 2s para nao travar
     REMOTE_VER=$(curl -sL --max-time 2 $REMOTE_URL | head -n 20 | grep '^VERSION="' | cut -d'"' -f2)
     
-    # Verifica versão e limpa espaços em branco
+    # Limpa espacos
     REMOTE_VER=$(echo $REMOTE_VER | tr -d '[:space:]')
-    LOCAL_VER=$(echo $LOCAL_VER | tr -d '[:space:]')
-
-    if [[ "$REMOTE_VER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] && [ "$REMOTE_VER" != "$LOCAL_VER" ]; then
-         echo -e "\n\033[1;32m >> NOVA ATUALIZACAO DISPONIVEL: $REMOTE_VER << \033[0m"
-         echo -e "Digite \033[1;33matualizar-setup\033[0m para baixar.\n"
-    fi
-}
-check_update
-
-export PS1='\[\e[1;32m\]Gabriel\[\e[0m\]@\[\e[1;34m\]Termux\[\e[0m\]:\[\e[1;33m\]\w\[\e[0m\] $ '
-EOF
-
-source ~/.bashrc
-
-# Tela Final
-clear
-echo -e "${VERDE}${NEGRITO}INSTALAÇÃO COMPLETA! (v$VERSION)${RESET}"
-echo -e "${VERDE}[✓]${RESET} Visual Corrigido"
-echo -e "${VERDE}[✓]${RESET} AcodeX Configurado"
-echo " "
-echo "Reinicie o Termux."
-
-
-----"
-    fi
-}
-draw_banner
-
-# 2. STATUS
-check() {
-    if command -v $1 &> /dev/null; then
-        echo -e "\033[1;32mON\033[0m"
-    else
-        echo -e "\033[1;31mOFF\033[0m"
-    fi
-}
-
-echo -e "    \033[1;33mPYTHON:\033[0m $(check python)   \033[1;33mNODE:\033[0m $(check node)   \033[1;33mSSH:\033[0m $(check sshd)"
-echo -e "    \033[1;33mCLANG :\033[0m $(check clang)   \033[1;33mGIT :\033[0m $(check git)    \033[1;33mX11:\033[0m $(check termux-x11)"
-echo -e "    \033[1;33mACODEX:\033[0m $(check acodex-server)"
-echo " "
-
-# 3. VERIFICADOR DE ATUALIZAÇÃO (CORRIGIDO SEM PARENTESES)
-check_update() {
-    REMOTE_URL="https://raw.githubusercontent.com/GabrielDaSilva17/Termux-Auto-Install/main/instalar.sh"
-    LOCAL_VER=$(cat ~/.gabriel_version 2>/dev/null || echo "0")
-    REMOTE_VER=$(curl -sL $REMOTE_URL | head -n 20 | grep '^VERSION="' | cut -d'"' -f2)
     
-    # Verifica versão de forma segura
-    if [[ "$REMOTE_VER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] && [ "$REMOTE_VER" != "$LOCAL_VER" ]; then
+    # Compara se versao remota nao esta vazia e e diferente
+    if [ ! -z "$REMOTE_VER" ] && [ "$REMOTE_VER" != "$LOCAL_VER" ]; then
          echo -e "\n\033[1;32m >> NOVA ATUALIZACAO DISPONIVEL: $REMOTE_VER << \033[0m"
          echo -e "Digite \033[1;33matualizar-setup\033[0m para baixar.\n"
     fi
 }
-check_update & disown
+# Roda em segundo plano sem mostrar aviso
+check_update >/dev/null 2>&1 & disown
 
 # 4. ANDROID INFO
 neofetch --ascii_distro android --disable packages shell term resolution
 
 export PS1='\[\e[1;32m\]Gabriel\[\e[0m\]@\[\e[1;34m\]Termux\[\e[0m\]:\[\e[1;33m\]\w\[\e[0m\] $ '
-EOF
+GABRIEL_CONFIG_END
 
 source ~/.bashrc
 
 # Tela Final
 clear
-echo -e "${VERDE}${NEGRITO}INSTALAÇÃO COMPLETA! (v$VERSION)${RESET}"
-echo -e "${VERDE}[✓]${RESET} Erro de Sintaxe Corrigido"
+echo -e "${VERDE}${NEGRITO}INSTALAÇÃO COMPLETA! v$VERSION${RESET}"
+echo -e "${VERDE}[✓]${RESET} Script Blindado"
 echo " "
 echo "Reinicie o Termux."
 
