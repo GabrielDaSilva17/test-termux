@@ -5,7 +5,7 @@
 # ==========================================
 
 # VERSÃO DO SCRIPT
-VERSION="0.3.7"
+VERSION="0.3.8"
 
 # Cores
 VERDE="\e[92m"; AMARELO="\e[33m"; CIANO="\e[36m"; VERMELHO="\e[31m"; RESET="\e[0m"; NEGRITO="\e[1m"; ROXO="\e[35m"
@@ -169,13 +169,15 @@ echo -e "    \033[1;33mCLANG :\033[0m $(check clang)   \033[1;33mGIT :\033[0m $(
 echo -e "    \033[1;33mACODEX:\033[0m $(check acodex-server)"
 echo " "
 
-# 3. VERIFICADOR DE ATUALIZAÇÃO
+# 3. VERIFICADOR DE ATUALIZAÇÃO (CORRIGIDO SEM PARENTESES)
 check_update() {
     REMOTE_URL="https://raw.githubusercontent.com/GabrielDaSilva17/Termux-Auto-Install/main/instalar.sh"
     LOCAL_VER=$(cat ~/.gabriel_version 2>/dev/null || echo "0")
     REMOTE_VER=$(curl -sL $REMOTE_URL | head -n 20 | grep '^VERSION="' | cut -d'"' -f2)
-    if [[ "$REMOTE_VER" =~ ^[0-9]+\.[0-9]+$ ]] && [ "$REMOTE_VER" != "$LOCAL_VER" ]; then
-         echo -e "\n\033[1;32m[!] NOVA ATUALIZAÇÃO DISPONÍVEL ($REMOTE_VER)!\033[0m"
+    
+    # Verifica versão de forma segura
+    if [[ "$REMOTE_VER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] && [ "$REMOTE_VER" != "$LOCAL_VER" ]; then
+         echo -e "\n\033[1;32m >> NOVA ATUALIZACAO DISPONIVEL: $REMOTE_VER << \033[0m"
          echo -e "Digite \033[1;33matualizar-setup\033[0m para baixar.\n"
     fi
 }
@@ -192,55 +194,8 @@ source ~/.bashrc
 # Tela Final
 clear
 echo -e "${VERDE}${NEGRITO}INSTALAÇÃO COMPLETA! (v$VERSION)${RESET}"
-echo -e "${VERDE}[✓]${RESET} Mensagens de 'Done' Removidas"
-echo -e "${VERDE}[✓]${RESET} AcodeX - Terminal... 'DONE'"
-echo -e "${AMARELO}Install axs cli binary.${RESET}"
+echo -e "${VERDE}[✓]${RESET} Erro de Sintaxe Corrigido"
 echo " "
-echo -e "${AMARELO}${NEGRITO}============================================${RESET}"
-echo -e "\n${ROXO} GABRIEL-TERMUX ULTRA EDITION 2026 (CLEAN)${RESET}\n"
-echo -e "${AMARELO}${NEGRITO}============================================${RESET}"
 echo "Reinicie o Termux."
 
 
-   \033[1;33mPYTHON:\033[0m $(check python)   \033[1;33mNODE:\033[0m $(check node)   \033[1;33mSSH:\033[0m $(check sshd)"
-echo -e "    \033[1;33mCLANG :\033[0m $(check clang)   \033[1;33mGIT :\033[0m $(check git)    \033[1;33mX11:\033[0m $(check termux-x11)"
-echo -e "    \033[1;33mCLANG :\033[0m $(check axs)"
-echo " "
-
-# 3. VERIFICADOR DE ATUALIZAÇÃO (SILENCIOSO)
-check_update() {
-    # URL do arquivo Raw
-    REMOTE_URL="https://raw.githubusercontent.com/GabrielDaSilva17/Termux-Auto-Install/main/instalar.sh"
-    LOCAL_VER=$(cat ~/.gabriel_version 2>/dev/null || echo "0")
-    
-    # Pega apenas as primeiras 20 linhas e filtra a versão
-    REMOTE_VER=$(curl -sL $REMOTE_URL | head -n 20 | grep '^VERSION="' | cut -d'"' -f2)
-    
-    # Verifica se REMOTE_VER é válido (ex: 3.1) e diferente
-    if [[ "$REMOTE_VER" =~ ^[0-9]+\.[0-9]+$ ]] && [ "$REMOTE_VER" != "$LOCAL_VER" ]; then
-         echo -e "\n\033[1;32m[!] NOVA ATUALIZAÇÃO DISPONÍVEL ($REMOTE_VER)!\033[0m"
-         echo -e "Digite \033[1;33matualizar-setup\033[0m para baixar.\n"
-    fi
-}
-# Roda em background e usa disown para não mostrar mensagem 'Done'
-check_update & disown
-
-# 4. ANDROID INFO
-neofetch --ascii_distro android --disable packages shell term resolution
-
-export PS1='\[\e[1;32m\]Gabriel\[\e[0m\]@\[\e[1;34m\]Termux\[\e[0m\]:\[\e[1;33m\]\w\[\e[0m\] $ '
-EOF
-
-source ~/.bashrc
-
-# Tela Final
-clear
-echo -e "${VERDE}${NEGRITO}INSTALAÇÃO COMPLETA! (v$VERSION)${RESET}"
-echo -e "${VERDE}[✓]${RESET} Mensagens de 'Done' Removidas"
-echo -e "${VERDE}[✓]${RESET}AcodeX - Terminal... 'DONE'"
-echo -e "${AMARELO}Install axs cli binary.${RESET}"
-echo " "
-echo -e "${AMARELO}${NEGRITO}============================================${RESET}"
-echo -e "\n${ROXO} GABRIEL-TERMUX ULTRA EDITION 2026 (CLEAN)${RESET}\n"
-echo -e "${AMARELO}${NEGRITO}============================================${RESET}"
-echo "Reinicie o Termux."
