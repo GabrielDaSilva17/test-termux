@@ -1,44 +1,50 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
 # ==========================================
-# GABRIEL-TERMUX ULTRA EDITION 2026 (POLISHED)
+# GABRIEL-TERMUX ULTRA EDITION 2026 (FINAL v5.6)
+# ==========================================
+# Fusão das versões 0.5.5 e 0.4.6.1 + Novo Visual
 # ==========================================
 
-VERSION="0.5.5"
+VERSION="5.6"
 
 # --- CORES E ESTILO ---
-R="\e[31m"; G="\e[32m"; Y="\e[33m"; C="\e[36m"; B="\e[1m"; W="\e[0m"
+R="\e[31m"; G="\e[32m"; Y="\e[33m"; C="\e[36m"; B="\e[1m"; W="\e[0m"; P="\e[35m"
 
 # --- CABEÇALHO ---
 clear
 echo -e "${Y}${B}============================================${W}"
-echo -e "\n${C}   [ GABRIEL-TERMUX v${VERSION} ]   ${W}\n"
+echo -e "\n${P}   [ GABRIEL-TERMUX v${VERSION} ULTRA ]   ${W}\n"
 echo -e "${Y}${B}============================================${W}"
 sleep 1
 
-# Salva versão
+# Salva versão para verificações futuras
 echo "$VERSION" > ~/.gabriel_version
+# Corrige dpkg travado antes de começar
 dpkg --configure -a > /dev/null 2>&1
 
-# Funções de Log
+# --- FUNÇÕES DE LOG ---
 msg() { echo -e "${C}➤ $1${W}"; }
 ok()  { echo -e "${G}  [OK] Concluído${W}"; }
 err() { echo -e "${R}  [X] Falha (Tentando método alternativo...)${W}"; }
 
-# 1. ATUALIZAÇÃO INICIAL
-msg "Atualizando Repositórios..."
+# 1. ATUALIZAÇÃO E REPOSITÓRIOS
+msg "Atualizando Repositórios e Base..."
 pkg update -y > /dev/null 2>&1
+pkg upgrade -y -o Dpkg::Options::="--force-confnew" > /dev/null 2>&1
 pkg install x11-repo termux-api game-repo tur-repo -y > /dev/null 2>&1
 ok
 
-# 2. PACOTES ESPECIAIS (Cores)
-msg "Instalando Lolcat..."
+# 2. CORREÇÃO DE CORES (LOLCAT/RUBY)
+msg "Configurando Cores (Lolcat)..."
 if ! pkg install lolcat -y > /dev/null 2>&1; then
-    pkg install ruby -y > /dev/null 2>&1 && gem install lolcat > /dev/null 2>&1
+    # Fallback para Ruby se o pacote nativo falhar
+    pkg install ruby -y > /dev/null 2>&1 
+    gem install lolcat > /dev/null 2>&1
 fi
 ok
 
-# 3. LISTA DE FERRAMENTAS
+# 3. INSTALAÇÃO DE FERRAMENTAS (LISTA UNIFICADA)
 msg "Instalando Ferramentas Essenciais..."
 PACOTES=(
     "figlet" "ncurses-utils" "git" "python" "clang" "make" "cmake" 
@@ -50,22 +56,20 @@ PACOTES=(
 )
 
 for PKG in "${PACOTES[@]}"; do
-    # Só instala se não tiver
     if ! dpkg -s "$PKG" >/dev/null 2>&1; then
         echo -ne "  Installing $PKG... "
         pkg install "$PKG" -y > /dev/null 2>&1 && echo -e "${G}✔${W}" || echo -e "${R}✖${W}"
     fi
 done
 
-# 4. REDE PRIVADA (TAILSCALE - LÓGICA ROBUSTA)
+# 4. REDE PRIVADA (TAILSCALE - LÓGICA V5.5)
 msg "Configurando Rede P2P (Tailscale)..."
 if pkg install tailscale -y > /dev/null 2>&1; then
     ok
 else
-    err
-    echo -e "${Y}  Baixando binário oficial...${W}"
+    # Download manual inteligente se falhar
+    echo -e "${Y}  Baixando binário oficial (Fallback)...${W}"
     ARCH=$(uname -m)
-    # Detecta arquitetura
     case $ARCH in
         aarch64) URL_PART="arm64" ;;
         arm*)    URL_PART="arm" ;;
@@ -82,76 +86,95 @@ else
             chmod +x $PREFIX/bin/tailscale*
             rm -rf ts.tgz "$DIR"
             ok
-        else
-            echo -e "${R}  Erro no download manual.${W}"
         fi
-    else
-        echo -e "${R}  Arquitetura não suportada ($ARCH)${W}"
     fi
 fi
 
-# 5. GRÁFICOS E CONFIGS
-msg "Finalizando X11 e Python..."
+# 5. PYTHON EXTRAS E ACODEX
+msg "Finalizando Python e Web Tools..."
 pkg install termux-x11 -y > /dev/null 2>&1
 python -m ensurepip --default-pip > /dev/null 2>&1
 pip install yt-dlp speedtest-cli > /dev/null 2>&1
 ok
 
-msg "AcodeX Server..."
+msg "Instalando AcodeX Server..."
+# Usa o instalador do AcodeX original
 curl -sL https://raw.githubusercontent.com/bajrangCoder/acode-plugin-acodex/main/installServer.sh | bash > /dev/null 2>&1
 ok
 
-# Links simbólicos
+# Links simbólicos úteis
 ln -sf $PREFIX/bin/clang $PREFIX/bin/gcc >/dev/null 2>&1
-sshd >/dev/null 2>&1
+# Inicializa SSH se não estiver rodando
+pgrep sshd >/dev/null || sshd >/dev/null 2>&1
 
-# 6. CRIAÇÃO DO .BASHRC (MODO SEGURO)
-# Usando 'EOF' com aspas para evitar expansão prematura de variáveis
+# 6. CONFIGURAÇÃO VISUAL .BASHRC (O NOVO VISUAL PEDIDO)
+msg "Aplicando Novo Tema Visual..."
+
+# Usando 'EOF' com aspas simples para proteger variáveis $ do script de instalação
 cat << 'EOF' > ~/.bashrc
-# --- GABRIEL CONFIG v0.5.5 ---
+# --- GABRIEL CONFIG v5.6 ---
+
+# Aliases de Produtividade
 alias atualizar='pkg update && pkg upgrade -y'
 alias fechar='pkill termux-x11'
-alias ssh-on='sshd && echo "SSH Iniciado" && ifconfig | grep inet'
+alias ssh-on='sshd && echo "SSH Iniciado em:" && ifconfig | grep "inet " | grep -v 127.0.0.1'
 alias cls='clear'
 alias limpar='rm -rf ~/.termux/shell_history'
 alias atualizar-setup='curl -fsSL https://raw.githubusercontent.com/GabrielDaSilva17/Termux-Auto-Install/main/instalar.sh | bash'
 alias acodex='acodex-server'
 alias rede-on='sudo tailscale up'
 alias rede-status='tailscale status'
+alias code='code-server'
 
 clear
 
-# Banner
-if command -v lolcat &> /dev/null; then
-    echo "╔════════════════════════════════════════╗" | lolcat
-    figlet -f slant " GABRIEL " | lolcat
-    echo "╚════════════════════════════════════════╝" | lolcat
-fi
-
-# Status Checker
-check() {
-    command -v $1 &> /dev/null && echo -e "\e[32mON\e[0m" || echo -e "\e[31mOFF\e[0m"
-}
-
-echo -e " PYTHON: $(check python)  NODE: $(check node)  SSH: $(check sshd)"
-echo -e " CLANG : $(check clang)  ACODEX: $(check axs)  REDE: $(check tailscale)"
-
-# Update Checker (Rápido)
-check_up() {
-    LOCAL=$(cat ~/.gabriel_version 2>/dev/null || echo "0")
-    REMOTE=$(curl -sL --max-time 2 "https://raw.githubusercontent.com/GabrielDaSilva17/Termux-Auto-Install/main/instalar.sh" | grep '^VERSION="' | head -1 | cut -d'"' -f2)
-    if [ ! -z "$REMOTE" ] && [ "$REMOTE" != "$LOCAL" ]; then
-        echo -e "\n\e[1;32m⚡ ATUALIZAÇÃO: $REMOTE (Digite 'atualizar-setup') ⚡\e[0m\n"
+# Função para desenhar o Banner
+draw_header() {
+    # 1. Nome Gabriel em ASCII Art
+    if command -v lolcat &> /dev/null; then
+        echo "╔═══════════════════════════════════════════════════════════╗" | lolcat
+        figlet -f slant "   GABRIEL   " | lolcat
+        echo "╚═══════════════════════════════════════════════════════════╝" | lolcat
+    else
+        echo "-------------------------------------------------------------"
+        echo "                      GABRIEL                                "
+        echo "-------------------------------------------------------------"
     fi
-}
-check_up
 
-neofetch --ascii_distro android --disable packages shell term resolution
+    # 2. Grid de Status (Solicitado pelo usuário)
+    # Funcao auxiliar para verificar status e colorir
+    chk() {
+        if command -v $1 &> /dev/null; then
+            echo -e "\033[1;32mON\033[0m" # Verde
+        else
+            echo -e "\033[1;31mOFF\033[0m" # Vermelho
+        fi
+    }
+
+    # Verifica especificamente o processo do SSH
+    chk_ssh() {
+        if pgrep sshd &> /dev/null; then echo -e "\033[1;32mON\033[0m"; else echo -e "\033[1;31mOFF\033[0m"; fi
+    }
+
+    echo -e "    \033[1;33mPYTHON:\033[0m $(chk python)   \033[1;33mNODE:\033[0m $(chk node)   \033[1;33mSSH:\033[0m $(chk_ssh)"
+    echo -e "    \033[1;33mCLANG :\033[0m $(chk clang)   \033[1;33mGIT :\033[0m $(chk git)    \033[1;33mX11:\033[0m $(chk termux-x11)"
+    echo -e "    \033[1;33mACODEX:\033[0m $(chk acodex-server)"
+    echo " "
+}
+
+draw_header
+
+# 3. Informações do Sistema (Estilo Android)
+# Força o logo Android e desativa info desnecessária para ficar limpo
+neofetch --ascii_distro android --disable packages shell term resolution --color_blocks off
+
+# 4. Prompt Personalizado
 export PS1='\[\e[1;32m\]Gabriel\[\e[0m\]@\[\e[1;34m\]Termux\[\e[0m\]:\[\e[1;33m\]\w\[\e[0m\] $ '
+
 EOF
 
+# Recarrega para aplicar imediatamente
 source ~/.bashrc
 
-echo -e "\n${G}${B}INSTALAÇÃO COMPLETA! Reinicie o Termux.${W}"
-
-
+echo -e "\n${G}${B}INSTALAÇÃO COMPLETA (v$VERSION)!${W}"
+echo -e "${C}Reinicie o Termux ou digite 'source ~/.bashrc' para ver o novo visual.${W}"
