@@ -74,10 +74,23 @@ packages=(
     "zsh" "ffmpeg" "htop" "screen" "jq" "rsync" "tree" "termux-api" 
     "neofetch" "cmatrix" "cowsay" "fortune" "sl" "ranger" "xorgproto"
     "proot" "proot-distro" "tsu" "man" "vim" "proxychains-ng" "tur-repo" "code-server"
-    "tailscale"
 )
 
 for pkg in "${packages[@]}"; do install_pkg_clean "$pkg"; done
+
+# CORREÇÃO CRÍTICA: TAILSCALE (Precisa atualizar o repo antes)
+echo -ne "${CIANO}Instalando Tailscale (Fix)... ${RESET}"
+# Garante atualização do TUR Repo antes de tentar instalar
+pkg update -y > /dev/null 2>&1
+if pkg install tailscale -y > /dev/null 2>&1; then
+    echo -e "${VERDE}Concluído${RESET}"
+else
+    # Tentativa forçada caso falhe na primeira
+    pkg install tur-repo -y > /dev/null 2>&1
+    pkg update -y > /dev/null 2>&1
+    pkg install tailscale -y > /dev/null 2>&1
+    echo -e "${VERDE}Concluído (Forçado)${RESET}"
+fi
 
 # 4. INSTALAÇÃO X11/SDL2
 echo -e "\n${AMARELO}>>> Configurando Interface Gráfica${RESET}"
@@ -102,6 +115,135 @@ fi
 
 echo -ne "${CIANO}Instalando yt-dlp... ${RESET}"
 if pip install yt-dlp >/dev/null 2>&1; then
+    echo -e "${VERDE}OK${RESET}"
+else
+    echo -e "${VERMELHO}Erro${RESET}"
+fi
+
+echo -ne "${CIANO}Instalando Speedtest... ${RESET}"
+if pip install speedtest-cli >/dev/null 2>&1; then
+    echo -e "${VERDE}OK${RESET}"
+else
+    echo -e "${VERMELHO}Erro${RESET}"
+fi
+
+# Instalação do AcodeX Server (ORIGINAL MANTIDO)
+echo -ne "${CIANO}AcodeX - Terminal... ${RESET}"
+curl -sL https://raw.githubusercontent.com/bajrangCoder/acode-plugin-acodex/main/installServer.sh | bash > /dev/null 2>&1
+if [ $? -eq 0 ]; then 
+    echo -e "${VERDE}OK${RESET}"
+else 
+    echo -e "${VERMELHO}Erro (Tente manual)${RESET}"
+fi
+
+
+sshd >/dev/null 2>&1
+ln -sf $PREFIX/bin/clang $PREFIX/bin/gcc >/dev/null 2>&1
+
+sleep 5
+
+# 6. CONFIGURAÇÃO VISUAL (.bashrc)
+echo "" > ~/.bashrc
+
+# AQUI ESTAVA O ERRO DO 'ELSE'. CORRIGIDO MANTENDO A ESTRUTURA
+cat << 'GABRIEL_CONFIG_END' >> ~/.bashrc
+# --- GABRIEL CONFIG ---
+alias atualizar='pkg update && pkg upgrade -y'
+alias fechar='pkill termux-x11'
+alias ssh-on='sshd && ifconfig | grep inet'
+alias cls='clear'
+alias limpar='rm -rf ~/.termux/shell_history'
+
+# Atalhos
+alias atualizar-setup='curl -fsSL https://raw.githubusercontent.com/GabrielDaSilva17/Termux-Auto-Install/main/instalar.sh | bash'
+alias acodex='acodex-server'
+
+# Atalho NOVO para Rede Privada (Tailscale)
+alias rede-on='sudo tailscale up'
+alias rede-status='tailscale status'
+
+clear
+
+# 1. BANNER
+draw_banner() {
+    if command -v lolcat &> /dev/null; then
+        echo "╔═══════════════════════════════════════════════════════════╗" | lolcat
+        figlet -f slant "   GABRIEL   " | lolcat
+        echo "╚═══════════════════════════════════════════════════════════╝" | lolcat
+    else
+        echo "-------------------------------------------------------------"
+        figlet -f slant "   GABRIEL   "
+        echo "-------------------------------------------------------------"
+    fi
+}
+draw_banner
+
+# 2. STATUS (RESTAUREI O ACODEX/AXS QUE EU TINHA TIRADO)
+check() {
+    if command -v $1 &> /dev/null; then
+        echo -e "\033[1;32mON\033[0m"
+    else
+        echo -e "\033[1;31mOFF\033[0m"
+    fi
+}
+
+echo -e "    \033[1;33mPYTHON:\033[0m $(check python)   \033[1;33mNODE:\033[0m $(check node)   \033[1;33mSSH:\033[0m $(check sshd)"
+echo -e "    \033[1;33mCLANG :\033[0m $(check clang)   \033[1;33mGIT :\033[0m $(check git)    \033[1;33mX11:\033[0m $(check termux-x11)"
+echo -e "    \033[1;33mACODEX:\033[0m $(check axs)    \033[1;33mREDE:\033[0m $(check tailscale)"
+echo " "
+
+# 3. VERIFICADOR DE ATUALIZAÇÃO (CORRIGIDO PARA APARECER NA TELA)
+check_update() {
+    REMOTE_URL="https://raw.githubusercontent.com/GabrielDaSilva17/Termux-Auto-Install/main/instalar.sh"
+    LOCAL_VER=$(cat ~/.gabriel_version 2>/dev/null || echo "0")
+    
+    # Timeout seguro e filtro limpo
+    REMOTE_VER=$(curl -sL --max-time 3 $REMOTE_URL | grep '^VERSION="' | head -n 1 | cut -d'"' -f2)
+    
+    # Limpa espacos invisiveis
+    REMOTE_VER=$(echo $REMOTE_VER | tr -d '[:space:]')
+    
+    if [ ! -z "$REMOTE_VER" ] && [ "$REMOTE_VER" != "$LOCAL_VER" ]; then
+         echo -e "\n\033[1;32m >> NOVA ATUALIZACAO DISPONIVEL: $REMOTE_VER << \033[0m"
+         echo -e "Digite \033[1;33matualizar-setup\033[0m para baixar.\n"
+    fi
+}
+# Removi o >/dev/null para você ver a mensagem
+check_update
+
+# 4. ANDROID INFO
+neofetch --ascii_distro android --disable packages shell term resolution
+
+export PS1='\[\e[1;32m\]Gabriel\[\e[0m\]@\[\e[1;34m\]Termux\[\e[0m\]:\[\e[1;33m\]\w\[\e[0m\] $ '
+GABRIEL_CONFIG_END
+
+source ~/.bashrc
+
+echo -e "${AMARELO}${NEGRITO}ESPERANDO.......................${RESET}"
+
+sleep 15
+# Tela Final
+clear
+echo -e "${VERDE}${NEGRITO}INSTALAÇÃO COMPLETA! v$VERSION${RESET}"
+echo -e "${VERDE}[✓]${RESET} Script Blindado"
+echo -e "${VERDE}[✓]${RESET} code-server "
+echo -e "${VERDE}[✓]${RESET} Rede P2P (Tailscale)"
+
+echo -e "${AMARELO}${NEGRITO}============================================${RESET}"
+echo -e "\n${ROXO} [ GABRIEL-TERMUX v${VERSION} ]${RESET}\n"
+echo -e "${AMARELO}${NEGRITO}============================================${RESET}"
+echo " "
+echo "Reinicie o Termux."
+echo -e "${AMARELO}${NEGRITO}ESPERANDO.......................${RESET}"
+
+sleep 10
+cls
+
+source ~/.bashrc
+
+
+
+/dev/null 2>&1; then
     echo -e "${VERDE}OK${RESET}"
 else
     echo -e "${VERMELHO}Erro${RESET}"
